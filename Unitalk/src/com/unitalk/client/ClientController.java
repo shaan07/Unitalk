@@ -7,8 +7,10 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import com.unitalk.constants.ChatMessage;
+import com.unitalk.constants.ClientDetails;
 import com.unitalk.constants.MessageConstants;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -21,45 +23,49 @@ public class ClientController {
 
 	@FXML
 	private TextField message;
-
 	@FXML
 	private Button buttonSend;
-
 	@FXML
 	private Button fileUpload;
-
 	@FXML
 	private Text filePath;
-
 	@FXML
-	private ListView<?> userList;
-
+	private ListView<String> userList;
 	@FXML
 	private Text serverIp;
-
 	@FXML
 	private Text userName;
-
 	@FXML
 	private TextArea clientLogs;
-
 	@FXML
 	private Button logoutButton;
 
 	private Socket serverSocket;
 	public  ObjectInputStream ois;
 	public  ObjectOutputStream oos;
+	private ClientDetails clientdetails;
+
 	@FXML
 	public void initialize() {
 		try {
 			this.userName.setText(ClientMain.controller.getButtonLogin().getText());
+			System.out.println(this.userName);
 			this.serverIp.setText(ClientMain.controller.getServerId().getText());
-			this.serverSocket= new Socket(this.serverIp.getText(),9888);
+			if(serverIp.getText()!=null && !serverIp.getText().isEmpty()){
+				System.out.println("Hel");
+				this.serverSocket= new Socket(this.serverIp.getText(),9888);}
+			else
+			{
+				System.out.println("Hello");
+				this.serverSocket= new  Socket("localhost",9888);
+			}
+			System.out.println(serverSocket);
 			this.ois= new ObjectInputStream(this.serverSocket.getInputStream());
 			this.oos= new ObjectOutputStream(this.serverSocket.getOutputStream());
 			RunnableClient runnableClient= new RunnableClient(this, this.serverSocket, ois, oos);
 			Thread runnableClientThread= new Thread(runnableClient);
 			runnableClientThread.start();
+
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -68,6 +74,7 @@ public class ClientController {
 			e.printStackTrace();
 		}
 		finally {
+			registerClient();
 		}
 
 	}
@@ -79,7 +86,8 @@ public class ClientController {
 			ChatMessage newMessage= new ChatMessage();
 			newMessage.setMessageType(MessageConstants.CHAT_BROADCAST);
 			newMessage.setMessage(this.message.getText());
-			this.clientLogs.appendText("Me>"+this.message.getText()+"\n");
+			newMessage.setClientDetails(clientdetails);
+			this.clientLogs.appendText(this.userName.getText()+">"+this.message.getText()+"\n");
 			oos.writeObject(newMessage);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -93,8 +101,52 @@ public class ClientController {
 	}
 	@FXML
 	void buttonLogoutAction(ActionEvent event) {
-
+		try {
+			ChatMessage exitMessage= new ChatMessage();
+			exitMessage.setMessageType(MessageConstants.EXIT_MESSAGE);
+			exitMessage.setMessage(this.getUserName().getText());
+			oos.writeObject(exitMessage);
+			this.userList.getItems().remove(exitMessage.getMessage());
+			Platform.exit();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
+
+
+	public void registerClient(){
+		try {
+			ChatMessage registerMessage= new ChatMessage();
+			registerMessage.setMessageType(MessageConstants.REGISTER_CLIENT);
+			registerMessage.setMessage(this.getUserName().getText());
+			this.clientdetails= new ClientDetails();
+			this.clientdetails.setNickname(this.userName.getText());
+			System.out.println(this.serverSocket);
+			oos.writeObject(registerMessage);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+
+	public Socket getServerSocket() {
+		return serverSocket;
+	}
+
+	public void setServerSocket(Socket serverSocket) {
+		this.serverSocket = serverSocket;
+	}
+
+	public  ClientDetails getClientdetails() {
+		return clientdetails;
+	}
+
+	public  void setClientdetails(ClientDetails clientdetails) {
+		this.clientdetails = clientdetails;
+	}
+
 
 	public TextField getMessage() {
 		return message;
@@ -128,11 +180,11 @@ public class ClientController {
 		this.filePath = filePath;
 	}
 
-	public ListView<?> getUserList() {
+	public ListView<String> getUserList() {
 		return userList;
 	}
 
-	public void setUserList(ListView<?> userList) {
+	public void setUserList(ListView<String> userList) {
 		this.userList = userList;
 	}
 
@@ -167,5 +219,5 @@ public class ClientController {
 	public void setLogoutButton(Button logoutButton) {
 		this.logoutButton = logoutButton;
 	}
-	
+
 }

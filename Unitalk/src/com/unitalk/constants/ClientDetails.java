@@ -1,17 +1,24 @@
 package com.unitalk.constants;
 
+import java.io.Serializable;
+
 import com.unitalk.server.ServerConnection;
 
-public class ClientDetails {
+public class ClientDetails implements Serializable{
 	
-	private ServerConnection connectedClient;
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private ServerConnection serverThread;
 	private String nickname;
 	
 	public ServerConnection getConnectedClient() {
-		return connectedClient;
+		return serverThread;
 	}
 	public void setConnectedClient(ServerConnection connectedClient) {
-		this.connectedClient = connectedClient;
+		this.serverThread = connectedClient;
 	}
 	public String getNickname() {
 		return nickname;

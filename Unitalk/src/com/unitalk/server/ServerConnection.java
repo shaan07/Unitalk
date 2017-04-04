@@ -3,6 +3,7 @@ package com.unitalk.server;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -10,14 +11,20 @@ import com.unitalk.constants.ChatMessage;
 import com.unitalk.constants.ClientDetails;
 import com.unitalk.constants.MessageConstants;
 
-public class ServerConnection implements Runnable{
+public class ServerConnection implements Runnable ,Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private ArrayList<ClientDetails> connectedClients;
 	private ServerController controller;
 	private Socket remoteClient;
 	private ObjectInputStream ois;
 	private ObjectOutputStream oos;
-
+	public ServerConnection() {
+		// TODO Auto-generated constructor stub
+	}
 	public ServerConnection(ServerController controller,Socket client,ArrayList<ClientDetails> connectedClients) {
 		try {
 			this.connectedClients=connectedClients;
@@ -42,14 +49,26 @@ public class ServerConnection implements Runnable{
 				switch(messageType){
 
 				case MessageConstants.REGISTER_CLIENT:
-					
-					this.controller.getServerLogs().appendText("Connected> "+newMessage.getClientDetails().getNickname()+"\n");
+					ClientDetails newClient= new ClientDetails();
+					newClient.setConnectedClient(this);
+					newClient.setNickname(newMessage.getMessage());
+					this.connectedClients.add(newClient);
+					//Broadcast client
+					ChatMessage registerBroadcast= new ChatMessage();
+					registerBroadcast.setMessageType(MessageConstants.REGISTER_BROADCAST);
+					//registerBroadcast.setConnectedClients(connectedClients);
+					//registerBroadcast.setClientDetails(newClient);
+					//registerBroadcast.setMessage(newClient.getNickname());
+					this.controller.getServerLogs().appendText("Connected> "+newClient.getNickname()+"\n");
+					broadcastRegisterMessage(registerBroadcast);
+
 					//Rest of code
 					break;
-					
+
 				case MessageConstants.CHAT_BROADCAST://Code for registering client
 					String messageData= newMessage.getMessage();
 					System.out.println(messageData);
+					//newMessage.setConnectedClients(this.connectedClients);
 					this.controller.getServerLogs().appendText(remoteClient.getInetAddress()+":"+remoteClient.getPort()+">"+messageData+"\n");
 					for(ClientDetails otherClient: this.connectedClients)
 					{
@@ -62,6 +81,22 @@ public class ServerConnection implements Runnable{
 				case MessageConstants.PRIVATE_MESSAGE://Code for registering client
 					break;
 				case MessageConstants.EXIT_MESSAGE://Code for registering client
+					String clientName= newMessage.getMessage();
+					ArrayList<ClientDetails> allClientDetails=new ArrayList<ClientDetails>();
+					ClientDetails exitClientDetails = null;
+					allClientDetails.addAll(this.connectedClients);
+
+					for(ClientDetails client:allClientDetails){
+						if(client.getNickname().equals(clientName)){
+							exitClientDetails=client;
+							this.connectedClients.remove(client);
+						}
+					}
+					ChatMessage exitMessage= new ChatMessage();
+					exitMessage.setMessageType(MessageConstants.EXIT_MESSAGE);
+					exitMessage.setMessage(exitClientDetails.getNickname());
+					this.controller.getServerLogs().appendText("Disconnected> "+clientName+"\n");
+					broadcastExitMessage(exitMessage);
 					break;
 
 				}
@@ -72,6 +107,53 @@ public class ServerConnection implements Runnable{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
 
+
+	}
+	public void broadcastRegisterMessage(ChatMessage message){
+		try {
+			System.out.println(this.connectedClients.size());
+			for(ClientDetails currentClient: this.connectedClients)
+			{
+				ArrayList<ClientDetails> allClientDetails= new ArrayList<ClientDetails>();
+				allClientDetails.addAll(this.connectedClients);
+				allClientDetails.remove(currentClient);
+				String nickname= currentClient.getNickname();
+				message.setMessage(nickname);
+				for(ClientDetails peerClients: allClientDetails){
+					System.out.println(nickname+"---->"+peerClients.getNickname());
+					ServerConnection clientSocket=peerClients.getConnectedClient();
+					if(nickname.equals("3")){
+						System.out.println("sending from 3"+allClientDetails.size()+"++++++"+peerClients.getNickname());
+					}
+					clientSocket.oos.writeUnshared(message);
+					//	oos.flush();
+					oos.reset();
+				}
+			}				
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+	public void broadcastExitMessage(ChatMessage message){
+		try {
+			System.out.println(this.connectedClients.size());
+			for(ClientDetails otherClients: this.connectedClients)
+			{
+				if(!otherClients.getConnectedClient().equals(this)) // don't send the message to the client that sent the message in the first place
+				{
+					ServerConnection clientSocket=otherClients.getConnectedClient();	
+					clientSocket.oos.writeUnshared(message);
+					//	oos.flush();
+					oos.reset();
+			}
+				
+			}				
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+	}
 }

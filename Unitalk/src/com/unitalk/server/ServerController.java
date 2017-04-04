@@ -1,5 +1,7 @@
 package com.unitalk.server;
 
+import java.io.Serializable;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -8,8 +10,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
 
-public class ServerController {
+public class ServerController implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	@FXML
 	private BorderPane serverMain;
 	@FXML

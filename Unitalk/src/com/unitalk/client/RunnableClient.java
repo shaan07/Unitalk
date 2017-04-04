@@ -1,12 +1,13 @@
 package com.unitalk.client;
 
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 import com.unitalk.constants.ChatMessage;
 import com.unitalk.constants.MessageConstants;
+
+import javafx.application.Platform;
 
 public class RunnableClient implements Runnable {
 
@@ -28,13 +29,34 @@ public class RunnableClient implements Runnable {
 		while(true)
 		{
 			try {
+				
 				ChatMessage newMessage= (ChatMessage) this.ois.readObject();
 				switch(newMessage.getMessageType())
 				{
 				case MessageConstants.CHAT_BROADCAST:
-					this.controller.getClientLogs().appendText(newMessage.getMessage()+"\n");
+					this.controller.getClientLogs().appendText(newMessage.getClientDetails().getNickname() +">"+newMessage.getMessage()+"\n");
 					break;
-				}
+				case MessageConstants.REGISTER_BROADCAST:
+					String newClient= newMessage.getMessage();
+					System.out.println(newMessage.getMessage());
+					Platform.runLater(new Runnable() {
+						@Override
+						public void run() {
+							addClient(newClient);
+						}
+					});
+					break;
+				case MessageConstants.PRIVATE_MESSAGE:
+					break;
+				case MessageConstants.EXIT_MESSAGE:
+					String leavingClient= newMessage.getMessage();
+					Platform.runLater(new Runnable() {
+						@Override
+						public void run() {
+							removeClient(leavingClient);
+						}
+					});
+					break;				}
 			}
 			catch (Exception e)
 			{
@@ -42,5 +64,15 @@ public class RunnableClient implements Runnable {
 			}
 		}
 	}
+	public void addClient(String nickname){
+		System.out.println("Adding new client :"+nickname);
+		if(!this.controller.getUserList().getItems().contains(nickname))
+		this.controller.getUserList().getItems().add(nickname);
 
+	}
+	public void removeClient(String nickname){
+		System.out.println("Removing client :"+nickname);
+		if(this.controller.getUserList().getItems().contains(nickname))
+		this.controller.getUserList().getItems().remove(nickname);
+	}
 }

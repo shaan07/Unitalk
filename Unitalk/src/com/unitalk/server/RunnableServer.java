@@ -7,6 +7,9 @@ import java.util.ArrayList;
 
 import com.unitalk.constants.ClientDetails;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 public class RunnableServer implements Runnable{
 
 	private ServerController controller;
@@ -14,10 +17,9 @@ public class RunnableServer implements Runnable{
 	private ArrayList<ClientDetails> connectedClients;
 	
 	public RunnableServer(ServerController controller) {
-		 
+		
 		this.connectedClients= new ArrayList<ClientDetails>();
 		this.controller=controller;
-		
 	}
 	
 	@Override
@@ -30,9 +32,6 @@ public class RunnableServer implements Runnable{
 				Socket remoteClient= this.serverSocket.accept();
 				System.out.println("Client Connected");
 				ServerConnection serverConnection= new ServerConnection(this.controller,remoteClient,this.connectedClients);
-				ClientDetails newClient= new ClientDetails();
-				newClient.setConnectedClient(serverConnection);
-				this.connectedClients.add(newClient);
 				Thread serverConnectionThread= new Thread(serverConnection);
 				serverConnectionThread.start();
 			}
