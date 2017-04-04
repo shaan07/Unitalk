@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.InnerShadow?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane id="borderPaneMain" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="697.0" prefWidth="882.0" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unitalk.client.ClientController">
+   <bottom>
+      <VBox prefHeight="135.0" prefWidth="882.0" style="-fx-background-color: #adebad;" BorderPane.alignment="CENTER">
+         <children>
+            <HBox prefHeight="63.0" prefWidth="801.0">
+               <children>
+                  <TextField id="message" fx:id="message" prefHeight="54.0" prefWidth="433.0" promptText="Enter your message">
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="50.0" top="25.0" />
+                     </HBox.margin>
+                  </TextField>
+                  <Button id="buttonSend" fx:id="buttonSend" contentDisplay="CENTER" mnemonicParsing="false" onAction="#buttonSendAction" prefHeight="30.0" prefWidth="92.0" style="-fx-background-color: #46d246;" text="Send" textFill="#136e4b">
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="20.0" top="23.0" />
+                     </HBox.margin>
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Button>
+               </children>
+            </HBox>
+            <HBox prefHeight="36.0" prefWidth="882.0">
+               <children>
+                  <Button id="fileUpload" fx:id="fileUpload" contentDisplay="CENTER" mnemonicParsing="false" onAction="#buttonAttachFileAction" style="-fx-background-color: #46d246;" text="Attach File" textFill="#0f4f24">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="150.0" top="10.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Text id="filePath" fx:id="filePath" fill="#04450e" strokeType="OUTSIDE" strokeWidth="0.0" text="File Path">
+                     <HBox.margin>
+                        <Insets left="20.0" top="18.0" />
+                     </HBox.margin>
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Text>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </bottom>
+   <right>
+      <VBox prefHeight="487.0" prefWidth="113.0" style="-fx-background-color: #adebad;" BorderPane.alignment="CENTER">
+         <children>
+            <Text fill="#012c09" strokeType="OUTSIDE" strokeWidth="0.0" text="Online Users" textAlignment="CENTER" wrappingWidth="271.63671875">
+               <font>
+                  <Font size="18.0" />
+               </font>
+               <VBox.margin>
+                  <Insets top="10.0" />
+               </VBox.margin>
+            </Text>
+            <ListView id="userList" fx:id="userList" prefHeight="516.0" prefWidth="252.0">
+               <effect>
+                  <InnerShadow />
+               </effect>
+               <VBox.margin>
+                  <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+               </VBox.margin>
+            </ListView>
+         </children>
+      </VBox>
+   </right>
+   <center>
+      <VBox prefHeight="503.0" prefWidth="629.0" style="-fx-background-color: #adebad;" BorderPane.alignment="CENTER">
+         <children>
+            <HBox prefHeight="38.0" prefWidth="619.0">
+               <children>
+                  <Text fill="#928b8b" strokeType="OUTSIDE" strokeWidth="0.0" text="Connected:">
+                     <HBox.margin>
+                        <Insets left="5.0" top="10.0" />
+                     </HBox.margin>
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Text>
+                  <Text id="serverIp" fx:id="serverIp" fill="#033707" strokeType="OUTSIDE" strokeWidth="0.0" text="IP Server">
+                     <HBox.margin>
+                        <Insets left="10.0" top="10.0" />
+                     </HBox.margin>
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Text>
+                  <Text id="textUser" fill="#6b6a6a" strokeType="OUTSIDE" strokeWidth="0.0" text="User:">
+                     <HBox.margin>
+                        <Insets left="200.0" top="10.0" />
+                     </HBox.margin>
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Text>
+                  <Text id="userName" fx:id="userName" fill="#0d4a11" strokeType="OUTSIDE" strokeWidth="0.0" text="userName">
+                     <HBox.margin>
+                        <Insets left="10.0" top="10.0" />
+                     </HBox.margin>
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Text>
+                  <Button id="buttonLogout" fx:id="logoutButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#buttonLogoutAction" prefHeight="30.0" prefWidth="177.0" style="-fx-background-color: #46d246;" text="Logout" textFill="#136e4b">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Button>
+               </children>
+               <VBox.margin>
+                  <Insets left="10.0" />
+               </VBox.margin>
+            </HBox>
+            <Text id="textGroupChat" fill="#052811" strokeType="OUTSIDE" strokeWidth="0.0" text="Chats:" wrappingWidth="613.63671875">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+               <VBox.margin>
+                  <Insets left="15.0" top="10.0" />
+               </VBox.margin>
+            </Text>
+            <TextArea id="clientLogs" fx:id="clientLogs" editable="false" prefHeight="478.0" prefWidth="607.0">
+               <effect>
+                  <InnerShadow />
+               </effect>
+               <VBox.margin>
+                  <Insets left="15.0" right="7.0" top="5.0" />
+               </VBox.margin>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </TextArea>
+         </children>
+      </VBox>
+   </center>
+   <opaqueInsets>
+      <Insets />
+   </opaqueInsets>
+</BorderPane>

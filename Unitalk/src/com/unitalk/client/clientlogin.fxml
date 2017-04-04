@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<VBox id="vBoxAccount" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="336.0" prefWidth="620.0" style="-fx-background-color: #adebad;" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unitalk.client.AccountActionController">
+   <children>
+      <HBox id="hBoxLogin" prefHeight="37.0" prefWidth="601.0">
+         <VBox.margin>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="20.0" />
+         </VBox.margin>
+         <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Server IP Address (Default to localhost):">
+               <font>
+                  <Font size="14.0" />
+               </font>
+               <HBox.margin>
+                  <Insets left="10.0" />
+               </HBox.margin>
+            </Text>
+            <TextField id="textFieldServerIP" fx:id="serverId" prefHeight="37.0" prefWidth="282.0" promptText="Provide server IP if not the 'localhost'">
+               <HBox.margin>
+                  <Insets left="15.0" />
+               </HBox.margin>
+            </TextField>
+         </children>
+      </HBox>
+      <TextField id="nickname" fx:id="buttonLogin" maxWidth="400.0" prefHeight="40.0" prefWidth="400.0" promptText="Enter Nickname">
+         <VBox.margin>
+            <Insets left="100.0" top="40.0" />
+         </VBox.margin>
+         <font>
+            <Font name="Calibri" size="22.0" />
+         </font>
+      </TextField>
+      <Button fx:id="login" mnemonicParsing="false" onAction="#buttonLoginAction" prefHeight="45.0" prefWidth="98.0" style="-fx-background-color: #46d246;;" text="Enter" textFill="#0f4f24">
+         <VBox.margin>
+            <Insets left="250.0" top="40.0" />
+         </VBox.margin>
+         <font>
+            <Font name="Calibri Bold" size="17.0" />
+         </font>
+      </Button>
+   </children>
+   <effect>
+      <DropShadow blurType="GAUSSIAN" height="37.31" radius="16.302500000000002" spread="0.15" width="29.9" />
+   </effect>
+</VBox>
