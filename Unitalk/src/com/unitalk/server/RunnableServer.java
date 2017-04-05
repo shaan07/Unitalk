@@ -7,9 +7,6 @@ import java.util.ArrayList;
 
 import com.unitalk.constants.ClientDetails;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-
 public class RunnableServer implements Runnable{
 
 	private ServerController controller;
@@ -27,7 +24,7 @@ public class RunnableServer implements Runnable{
 		// TODO Auto-generated method stub
 		try {
 			this.serverSocket=new ServerSocket(9888);
-			System.out.println("Server started at 9888.Waiting for client");
+			this.controller.getServerLogs().appendText("Server started at 9888.Waiting for client\n");
 			while(true){
 				Socket remoteClient= this.serverSocket.accept();
 				System.out.println("Client Connected");

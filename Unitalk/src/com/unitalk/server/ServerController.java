@@ -2,11 +2,11 @@ package com.unitalk.server;
 
 import java.io.Serializable;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
 
@@ -18,12 +18,6 @@ public class ServerController implements Serializable{
 	private static final long serialVersionUID = 1L;
 	@FXML
 	private BorderPane serverMain;
-	@FXML
-	private TextField xmlPathText;
-	@FXML
-	private Button browseButton;
-	@FXML
-	private Button loadXml;
 	@FXML
 	private TextArea serverLogs;
 	@FXML
@@ -52,16 +46,7 @@ public class ServerController implements Serializable{
 	void buttonStopServerAction(ActionEvent event) {
 
 		this.serverThread=null;
-	}
-
-	@FXML
-	void buttonBrowseAction(ActionEvent event) {
-
-	}
-
-	@FXML
-	void buttonLoadAction(ActionEvent event) {
-
+		Platform.exit();
 	}
 
 	public BorderPane getServerMain() {
@@ -70,30 +55,6 @@ public class ServerController implements Serializable{
 
 	public void setServerMain(BorderPane serverMain) {
 		this.serverMain = serverMain;
-	}
-
-	public TextField getXmlPathText() {
-		return xmlPathText;
-	}
-
-	public void setXmlPathText(TextField xmlPathText) {
-		this.xmlPathText = xmlPathText;
-	}
-
-	public Button getBrowseButton() {
-		return browseButton;
-	}
-
-	public void setBrowseButton(Button browseButton) {
-		this.browseButton = browseButton;
-	}
-
-	public Button getLoadXml() {
-		return loadXml;
-	}
-
-	public void setLoadXml(Button loadXml) {
-		this.loadXml = loadXml;
 	}
 
 	public TextArea getServerLogs() {

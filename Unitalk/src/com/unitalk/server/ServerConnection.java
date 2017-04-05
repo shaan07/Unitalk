@@ -33,7 +33,7 @@ public class ServerConnection implements Runnable ,Serializable{
 			this.oos= new ObjectOutputStream(client.getOutputStream());
 			this.ois= new ObjectInputStream(client.getInputStream());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			this.controller.getServerLogs().appendText("Internal I/O error\n");
 			e.printStackTrace();
 		}
 	}
@@ -56,19 +56,16 @@ public class ServerConnection implements Runnable ,Serializable{
 					//Broadcast client
 					ChatMessage registerBroadcast= new ChatMessage();
 					registerBroadcast.setMessageType(MessageConstants.REGISTER_BROADCAST);
-					//registerBroadcast.setConnectedClients(connectedClients);
-					//registerBroadcast.setClientDetails(newClient);
-					//registerBroadcast.setMessage(newClient.getNickname());
+
 					this.controller.getServerLogs().appendText("Connected> "+newClient.getNickname()+"\n");
 					broadcastRegisterMessage(registerBroadcast);
 
 					//Rest of code
 					break;
 
-				case MessageConstants.CHAT_BROADCAST://Code for registering client
+				case MessageConstants.CHAT_BROADCAST://Code for Broadcast 
 					String messageData= newMessage.getMessage();
 					System.out.println(messageData);
-					//newMessage.setConnectedClients(this.connectedClients);
 					this.controller.getServerLogs().appendText(remoteClient.getInetAddress()+":"+remoteClient.getPort()+">"+messageData+"\n");
 					for(ClientDetails otherClient: this.connectedClients)
 					{
@@ -78,9 +75,20 @@ public class ServerConnection implements Runnable ,Serializable{
 						}
 					}
 					break;
-				case MessageConstants.PRIVATE_MESSAGE://Code for registering client
+				case MessageConstants.PRIVATE_MESSAGE://Code for PM
+					String privateMessage= newMessage.getMessage();
+					System.out.println(privateMessage);
+					String recipientNickname= newMessage.getRecipientClient();
+					ClientDetails recipientClientDetails = null;
+
+					for(ClientDetails client:this.connectedClients){
+						if(client.getNickname().equals(recipientNickname)){
+							recipientClientDetails=client;
+							client.getConnectedClient().oos.writeUnshared(newMessage);
+						}
+					}
 					break;
-				case MessageConstants.EXIT_MESSAGE://Code for registering client
+				case MessageConstants.EXIT_MESSAGE://Code for exiting client
 					String clientName= newMessage.getMessage();
 					ArrayList<ClientDetails> allClientDetails=new ArrayList<ClientDetails>();
 					ClientDetails exitClientDetails = null;
@@ -104,7 +112,7 @@ public class ServerConnection implements Runnable ,Serializable{
 
 			}
 		} catch (ClassNotFoundException | IOException e) {
-			// TODO Auto-generated catch block
+			this.controller.getServerLogs().appendText("Internal error\n");
 			e.printStackTrace();
 		}
 
@@ -127,12 +135,11 @@ public class ServerConnection implements Runnable ,Serializable{
 						System.out.println("sending from 3"+allClientDetails.size()+"++++++"+peerClients.getNickname());
 					}
 					clientSocket.oos.writeUnshared(message);
-					//	oos.flush();
 					oos.reset();
 				}
 			}				
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			this.controller.getServerLogs().appendText("Internal I/O error\n");
 			e.printStackTrace();
 		}
 
@@ -146,13 +153,12 @@ public class ServerConnection implements Runnable ,Serializable{
 				{
 					ServerConnection clientSocket=otherClients.getConnectedClient();	
 					clientSocket.oos.writeUnshared(message);
-					//	oos.flush();
 					oos.reset();
 			}
 				
 			}				
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			this.controller.getServerLogs().appendText("Internal I/O error\n");
 			e.printStackTrace();
 		}	
 	}

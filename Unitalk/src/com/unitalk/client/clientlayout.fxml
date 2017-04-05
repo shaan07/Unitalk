@@ -12,11 +12,11 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane id="borderPaneMain" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="697.0" prefWidth="882.0" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unitalk.client.ClientController">
+<BorderPane id="borderPaneMain" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unitalk.client.ClientController">
    <bottom>
-      <VBox prefHeight="135.0" prefWidth="882.0" style="-fx-background-color: #adebad;" BorderPane.alignment="CENTER">
+      <VBox prefHeight="81.0" prefWidth="882.0" style="-fx-background-color: #adebad;" BorderPane.alignment="CENTER">
          <children>
-            <HBox prefHeight="63.0" prefWidth="801.0">
+            <HBox prefHeight="0.0" prefWidth="882.0">
                <children>
                   <TextField id="message" fx:id="message" prefHeight="54.0" prefWidth="433.0" promptText="Enter your message">
                      <HBox.margin>
@@ -33,31 +33,11 @@
                   </Button>
                </children>
             </HBox>
-            <HBox prefHeight="36.0" prefWidth="882.0">
-               <children>
-                  <Button id="fileUpload" fx:id="fileUpload" contentDisplay="CENTER" mnemonicParsing="false" onAction="#buttonAttachFileAction" style="-fx-background-color: #46d246;" text="Attach File" textFill="#0f4f24">
-                     <font>
-                        <Font size="14.0" />
-                     </font>
-                     <HBox.margin>
-                        <Insets bottom="10.0" left="150.0" top="10.0" />
-                     </HBox.margin>
-                  </Button>
-                  <Text id="filePath" fx:id="filePath" fill="#04450e" strokeType="OUTSIDE" strokeWidth="0.0" text="File Path">
-                     <HBox.margin>
-                        <Insets left="20.0" top="18.0" />
-                     </HBox.margin>
-                     <font>
-                        <Font size="14.0" />
-                     </font>
-                  </Text>
-               </children>
-            </HBox>
          </children>
       </VBox>
    </bottom>
    <right>
-      <VBox prefHeight="487.0" prefWidth="113.0" style="-fx-background-color: #adebad;" BorderPane.alignment="CENTER">
+      <VBox prefHeight="450.0" prefWidth="113.0" style="-fx-background-color: #adebad;" BorderPane.alignment="CENTER">
          <children>
             <Text fill="#012c09" strokeType="OUTSIDE" strokeWidth="0.0" text="Online Users" textAlignment="CENTER" wrappingWidth="271.63671875">
                <font>
@@ -67,19 +47,22 @@
                   <Insets top="10.0" />
                </VBox.margin>
             </Text>
-            <ListView id="userList" fx:id="userList" prefHeight="516.0" prefWidth="252.0">
+            <ListView id="userList" fx:id="userList" prefHeight="478.0" prefWidth="252.0">
                <effect>
                   <InnerShadow />
                </effect>
                <VBox.margin>
-                  <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+                  <Insets bottom="5.0" left="10.0" right="10.0" top="40.0" />
                </VBox.margin>
             </ListView>
          </children>
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin>
       </VBox>
    </right>
    <center>
-      <VBox prefHeight="503.0" prefWidth="629.0" style="-fx-background-color: #adebad;" BorderPane.alignment="CENTER">
+      <VBox prefHeight="503.0" prefWidth="540.0" style="-fx-background-color: #adebad;" BorderPane.alignment="CENTER">
          <children>
             <HBox prefHeight="38.0" prefWidth="619.0">
                <children>
@@ -91,7 +74,7 @@
                         <Font size="14.0" />
                      </font>
                   </Text>
-                  <Text id="serverIp" fx:id="serverIp" fill="#033707" strokeType="OUTSIDE" strokeWidth="0.0" text="IP Server">
+                  <Text id="serverIp" fx:id="serverIp" fill="#033707" strokeType="OUTSIDE" strokeWidth="0.0" text="Localhost">
                      <HBox.margin>
                         <Insets left="10.0" top="10.0" />
                      </HBox.margin>
@@ -115,10 +98,13 @@
                         <Font size="14.0" />
                      </font>
                   </Text>
-                  <Button id="buttonLogout" fx:id="logoutButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#buttonLogoutAction" prefHeight="30.0" prefWidth="177.0" style="-fx-background-color: #46d246;" text="Logout" textFill="#136e4b">
+                  <Button id="buttonLogout" fx:id="logoutButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#buttonLogoutAction" prefHeight="30.0" prefWidth="94.0" style="-fx-background-color: #46d246;" text="Logout" textFill="#136e4b">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
+                     <HBox.margin>
+                        <Insets left="20.0" top="5.0" />
+                     </HBox.margin>
                   </Button>
                </children>
                <VBox.margin>
@@ -133,7 +119,7 @@
                   <Insets left="15.0" top="10.0" />
                </VBox.margin>
             </Text>
-            <TextArea id="clientLogs" fx:id="clientLogs" editable="false" prefHeight="478.0" prefWidth="607.0">
+            <TextArea id="clientLogs" fx:id="clientLogs" editable="false" prefHeight="478.0" prefWidth="300.0">
                <effect>
                   <InnerShadow />
                </effect>

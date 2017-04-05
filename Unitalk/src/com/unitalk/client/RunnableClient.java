@@ -47,6 +47,8 @@ public class RunnableClient implements Runnable {
 					});
 					break;
 				case MessageConstants.PRIVATE_MESSAGE:
+					this.controller.getUserList().getSelectionModel().select(newMessage.getClientDetails().getNickname());
+					this.controller.getClientLogs().appendText(newMessage.getClientDetails().getNickname() +" to You >"+newMessage.getMessage()+"\n");
 					break;
 				case MessageConstants.EXIT_MESSAGE:
 					String leavingClient= newMessage.getMessage();
@@ -60,6 +62,7 @@ public class RunnableClient implements Runnable {
 			}
 			catch (Exception e)
 			{
+				this.controller.getClientLogs().appendText("Internal server error\n");
 				e.printStackTrace();
 			}
 		}
@@ -68,6 +71,12 @@ public class RunnableClient implements Runnable {
 		System.out.println("Adding new client :"+nickname);
 		if(!this.controller.getUserList().getItems().contains(nickname))
 		this.controller.getUserList().getItems().add(nickname);
+		
+		if(this.controller.getUserList().getItems().size()==1){
+			this.controller.getUserList().getItems().add("Broadcast");
+			this.controller.getUserList().getSelectionModel().select("Broadcast");
+		}
+
 
 	}
 	public void removeClient(String nickname){

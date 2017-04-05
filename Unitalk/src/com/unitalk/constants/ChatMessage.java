@@ -15,7 +15,7 @@ public class ChatMessage implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private int messageType;
 	private ClientDetails clientDetails; 
-	private ServerConnection recipientClient;
+	private String recipientClient;
 	private String message;
 	private ArrayList<ClientDetails> connectedClients;
 
@@ -42,10 +42,10 @@ public class ChatMessage implements Serializable{
 	public void setClientDetails(ClientDetails clientDetails) {
 		this.clientDetails = clientDetails;
 	}
-	public ServerConnection getRecipientClient() {
+	public String getRecipientClient() {
 		return recipientClient;
 	}
-	public void setRecipientClient(ServerConnection recipientClient) {
+	public void setRecipientClient(String recipientClient) {
 		this.recipientClient = recipientClient;
 	}
 	public String getMessage() {

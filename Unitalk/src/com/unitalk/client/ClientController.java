@@ -26,10 +26,6 @@ public class ClientController {
 	@FXML
 	private Button buttonSend;
 	@FXML
-	private Button fileUpload;
-	@FXML
-	private Text filePath;
-	@FXML
 	private ListView<String> userList;
 	@FXML
 	private Text serverIp;
@@ -51,26 +47,25 @@ public class ClientController {
 			this.userName.setText(ClientMain.controller.getButtonLogin().getText());
 			System.out.println(this.userName);
 			this.serverIp.setText(ClientMain.controller.getServerId().getText());
-			if(serverIp.getText()!=null && !serverIp.getText().isEmpty()){
-				System.out.println("Hel");
-				this.serverSocket= new Socket(this.serverIp.getText(),9888);}
-			else
-			{
-				System.out.println("Hello");
-				this.serverSocket= new  Socket("localhost",9888);
+			if (serverIp.getText() != null && !serverIp.getText().isEmpty()) {
+				this.serverSocket = new Socket(this.serverIp.getText(), 9888);
+			} else {
+				this.serverIp.setText("Localhost");
+				this.serverSocket = new Socket("localhost", 9888);
 			}
-			System.out.println(serverSocket);
-			this.ois= new ObjectInputStream(this.serverSocket.getInputStream());
-			this.oos= new ObjectOutputStream(this.serverSocket.getOutputStream());
-			RunnableClient runnableClient= new RunnableClient(this, this.serverSocket, ois, oos);
-			Thread runnableClientThread= new Thread(runnableClient);
+			this.clientLogs.appendText("Connected to Server :" + serverSocket.getInetAddress() + " Port :"
+					+ serverSocket.getPort() + "\n");
+			this.ois = new ObjectInputStream(this.serverSocket.getInputStream());
+			this.oos = new ObjectOutputStream(this.serverSocket.getOutputStream());
+			RunnableClient runnableClient = new RunnableClient(this, this.serverSocket, ois, oos);
+			Thread runnableClientThread = new Thread(runnableClient);
 			runnableClientThread.start();
 
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
+			this.clientLogs.appendText("Unknown host error\n");
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			this.clientLogs.appendText("Internal server error\n");
 			e.printStackTrace();
 		}
 		finally {
@@ -84,21 +79,33 @@ public class ClientController {
 
 		try {
 			ChatMessage newMessage= new ChatMessage();
-			newMessage.setMessageType(MessageConstants.CHAT_BROADCAST);
+			if(this.userList.getSelectionModel().getSelectedItem().isEmpty())
+			{
+				this.getUserList().getSelectionModel().select("Broadcast");
+			}
+
+			if(!this.userList.getSelectionModel().getSelectedItem().equals("Broadcast"))
+			{
+				newMessage.setMessageType(MessageConstants.PRIVATE_MESSAGE);
+				newMessage.setRecipientClient(this.userList.getSelectionModel().getSelectedItem());
+				this.clientLogs.appendText(this.userName.getText()+" to "+this.userList.getSelectionModel().getSelectedItem()+">"+this.message.getText()+"\n");
+			}
+			else
+			{
+				newMessage.setMessageType(MessageConstants.CHAT_BROADCAST);
+				this.clientLogs.appendText(this.userName.getText()+">"+this.message.getText()+"\n");
+			}
+
 			newMessage.setMessage(this.message.getText());
 			newMessage.setClientDetails(clientdetails);
-			this.clientLogs.appendText(this.userName.getText()+">"+this.message.getText()+"\n");
+
 			oos.writeObject(newMessage);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			this.clientLogs.appendText("Internal server error\n");
 			e.printStackTrace();
 		}
 	}
 
-	@FXML
-	void buttonAttachFileAction(ActionEvent event) {
-
-	}
 	@FXML
 	void buttonLogoutAction(ActionEvent event) {
 		try {
@@ -109,7 +116,7 @@ public class ClientController {
 			this.userList.getItems().remove(exitMessage.getMessage());
 			Platform.exit();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			this.clientLogs.appendText("Internal server error\n");
 			e.printStackTrace();
 		}
 	}
@@ -122,10 +129,9 @@ public class ClientController {
 			registerMessage.setMessage(this.getUserName().getText());
 			this.clientdetails= new ClientDetails();
 			this.clientdetails.setNickname(this.userName.getText());
-			System.out.println(this.serverSocket);
 			oos.writeObject(registerMessage);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			this.clientLogs.appendText("Internal server error\n");
 			e.printStackTrace();
 		}
 	}
@@ -162,22 +168,6 @@ public class ClientController {
 
 	public void setButtonSend(Button buttonSend) {
 		this.buttonSend = buttonSend;
-	}
-
-	public Button getFileUpload() {
-		return fileUpload;
-	}
-
-	public void setFileUpload(Button fileUpload) {
-		this.fileUpload = fileUpload;
-	}
-
-	public Text getFilePath() {
-		return filePath;
-	}
-
-	public void setFilePath(Text filePath) {
-		this.filePath = filePath;
 	}
 
 	public ListView<String> getUserList() {
