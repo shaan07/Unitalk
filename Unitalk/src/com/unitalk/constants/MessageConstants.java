@@ -7,4 +7,5 @@ public class MessageConstants {
 	public static final int PRIVATE_MESSAGE = 3; 
 	public static final int REGISTER_CLIENT = 4; 
 	public static final int REGISTER_BROADCAST = 5;
+	public static final int CHAT_PAINT = 6;
 }
