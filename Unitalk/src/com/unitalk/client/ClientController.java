@@ -13,10 +13,14 @@ import com.unitalk.constants.MessageConstants;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Cursor;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 
 public class ClientController {
@@ -35,17 +39,43 @@ public class ClientController {
 	private TextArea clientLogs;
 	@FXML
 	private Button logoutButton;
+	@FXML
+	private Button btnLine;
+	@FXML
+	private Button btnCircle;
+	@FXML
+	private Button btnSquare;
+	@FXML
+	private Button btnRectangle;
+	@FXML
+	private Button btnText;
+	@FXML
+	private Button btnBrush;
+	@FXML
+	private Button btnZoom;
+	@FXML
+	private Button btnPencil;
+	@FXML
+	private Button btnRotateLeft;
+	@FXML
+	private Button btnRotateRight;
+	@FXML
+	private ColorPicker colorPicker;
+	@FXML
+	private Canvas canvas;
 
 	private Socket serverSocket;
 	public  ObjectInputStream ois;
 	public  ObjectOutputStream oos;
 	private ClientDetails clientdetails;
+	public static String setTool;
 
 	@FXML
 	public void initialize() {
 		try {
 			this.userName.setText(ClientMain.controller.getButtonLogin().getText());
 			System.out.println(this.userName);
+			setTool = "na";
 			this.serverIp.setText(ClientMain.controller.getServerId().getText());
 			if (serverIp.getText() != null && !serverIp.getText().isEmpty()) {
 				this.serverSocket = new Socket(this.serverIp.getText(), 9888);
@@ -72,6 +102,23 @@ public class ClientController {
 			registerClient();
 		}
 
+	}
+	
+	@FXML
+	void btnLineAction (ActionEvent event){
+		setTool = "line";
+	}
+	
+	@FXML
+	void canvasHover (MouseEvent event ){
+		if (setTool != "na"){
+			canvas.setCursor(Cursor.CROSSHAIR);
+		}
+	}
+	
+	@FXML
+	void canvasHoverExit (MouseEvent event){
+		canvas.setCursor(Cursor.DEFAULT);
 	}
 
 	@FXML
