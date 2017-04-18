@@ -18,7 +18,7 @@ public static AccountActionController controller;
 			
 			VBox root = (VBox)FXMLLoader.load(getClass().getResource("clientlogin.fxml"));
 			Scene scene = new Scene(root,600,600);
-			scene.getStylesheets().add(getClass().getResource("client.css").toExternalForm());
+	//		scene.getStylesheets().add(getClass().getResource("client.css").toExternalForm());
 			primaryStage.setScene(scene);
 			primaryStage.show();
 			
