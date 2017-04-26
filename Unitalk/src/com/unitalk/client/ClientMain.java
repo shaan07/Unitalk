@@ -8,7 +8,7 @@ import javafx.stage.Stage;
 
 public class ClientMain extends Application{
 
-public static Stage currentStage=new Stage();
+public static Stage currentStage = new Stage();
 public static AccountActionController controller;
 	
 	@Override

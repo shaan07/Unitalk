@@ -1,26 +1,38 @@
 package com.unitalk.client;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import javax.imageio.ImageIO;
+
 import com.unitalk.constants.ChatMessage;
 import com.unitalk.constants.ClientDetails;
 import com.unitalk.constants.MessageConstants;
 
 import javafx.application.Platform;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Cursor;
+import javafx.scene.ImageCursor;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.ArcType;
 import javafx.scene.text.Text;
 
 public class ClientController {
@@ -62,20 +74,24 @@ public class ClientController {
 	@FXML
 	private ColorPicker colorPicker;
 	@FXML
-	private Canvas canvas;
+	public Canvas canvas;
 
 	private Socket serverSocket;
 	public  ObjectInputStream ois;
 	public  ObjectOutputStream oos;
 	private ClientDetails clientdetails;
 	public static String setTool;
-
+	private GraphicsContext gc;
+	private double x, y;
+	private Image screenShot;
 	@FXML
 	public void initialize() {
 		try {
 			this.userName.setText(ClientMain.controller.getButtonLogin().getText());
 			System.out.println(this.userName);
 			setTool = "na";
+			gc = canvas.getGraphicsContext2D();
+			colorPicker = new ColorPicker(Color.BLACK);
 			this.serverIp.setText(ClientMain.controller.getServerId().getText());
 			if (serverIp.getText() != null && !serverIp.getText().isEmpty()) {
 				this.serverSocket = new Socket(this.serverIp.getText(), 9888);
@@ -110,15 +126,161 @@ public class ClientController {
 	}
 	
 	@FXML
+	void btnPencilAction (ActionEvent event){
+		setTool = "pencil";
+	}
+	
+	@FXML
+	void btnRectangleAction (ActionEvent event){
+		setTool = "rectangle";
+	}
+	
+	@FXML
+	void btnSquareAction (ActionEvent event){
+		setTool = "square";
+	}
+	
+	@FXML
+	void btnCircleAction (ActionEvent event){
+		setTool = "circle";
+	}
+	
+	@FXML
+	void btnEllipseAction (ActionEvent event){
+		setTool = "ellipse";
+	}
+	
+	@FXML
+	void btnRotateLeftAction (ActionEvent event){
+		setTool = "rotate_left";
+		canvas.setRotate(canvas.getRotate()-90);
+	}
+	
+	@FXML
+	void btnRotateRightAction (ActionEvent event){
+		setTool = "rotate_right";
+		canvas.setRotate(canvas.getRotate()+90);
+	}
+	
+	@FXML
+	void colorPickerAction (ActionEvent event){
+		System.out.println(colorPicker.getValue());
+		gc.setStroke(colorPicker.getValue());
+	}
+	
+	
+	@FXML
+	void btnZoomPlusClick (MouseEvent event){
+		setTool = "zoom_plus";
+		canvas.setScaleX(canvas.getScaleX() * 1.05);
+		canvas.setScaleY(canvas.getScaleY() * 1.05);
+		event.consume();
+	}
+	
+	@FXML
+	void btnZoomMinusClick (MouseEvent event){
+		setTool = "zoom_minus";
+		canvas.setScaleX(canvas.getScaleX() * 0.95);
+		canvas.setScaleY(canvas.getScaleY() * 0.95);
+		event.consume();
+	}
+	
+	@FXML
+	void canvasOnScroll (ScrollEvent event){
+		double zoomFactor = 1.05;
+        double deltaY = event.getDeltaY();
+        if (deltaY < 0){
+          zoomFactor = 2.0 - zoomFactor;
+        }
+        canvas.setScaleX(canvas.getScaleX() * zoomFactor);
+        canvas.setScaleY(canvas.getScaleY() * zoomFactor);
+        event.consume();
+	}
+	
+	@FXML
 	void canvasHover (MouseEvent event ){
 		if (setTool != "na"){
-			canvas.setCursor(Cursor.CROSSHAIR);
+			switch(setTool){
+				case "pencil":
+								Image cursorImage = new Image ("com/unitalk/client/icons/pencil.png");
+								canvas.setCursor(new ImageCursor(cursorImage, cursorImage.getWidth()/2, cursorImage.getHeight()/2));
+							break;
+				default:	canvas.setCursor(Cursor.CROSSHAIR);
+			}
 		}
 	}
 	
 	@FXML
 	void canvasHoverExit (MouseEvent event){
 		canvas.setCursor(Cursor.DEFAULT);
+	}
+	
+	@FXML
+	void canvasMousePressed (MouseEvent event){
+			switch(setTool){
+			case "line": 
+						gc.beginPath();
+				        gc.moveTo(event.getX(), event.getY());
+				        gc.stroke();
+						break;
+			case "pencil":
+							gc.beginPath();
+					        gc.moveTo(event.getX(), event.getY());
+					        gc.setStroke(colorPicker.getValue());
+					        gc.stroke();
+					      break;
+			case "rectangle": 
+								x = event.getX();
+								y = event.getY();
+						        break;
+			case "square": 
+							x = event.getX();
+							y = event.getY();
+					        break;
+			case "circle": 
+							x = event.getX();
+							y = event.getY();
+					        break;
+			case "ellipse": 
+							x = event.getX();
+							y = event.getY();
+					        break;
+			}
+	}
+	
+	@FXML
+	void canvasMouseDrag(MouseEvent event){
+		switch(setTool){
+		case "pencil":
+					 gc.lineTo(event.getX(), event.getY());
+					 gc.setStroke(colorPicker.getValue());
+			         gc.stroke();
+			         sendScreenShot();
+			         break;
+
+		}
+	}
+	
+	@FXML
+	void canvasMouseRelease (MouseEvent event){
+			switch(setTool){
+			case "line":
+						 gc.lineTo(event.getX(), event.getY());
+				         gc.stroke();
+				         break;
+			case "rectangle": 
+							gc.strokeRect(x, y, event.getX() - x, event.getY() - y);
+					        break;
+			case "square": 
+							gc.strokeRect(x, y, event.getY() - y, event.getY() - y);
+					        break;
+			case "circle":
+							gc.strokeArc(x, y, event.getY()-y, event.getY()-y, 0, 360, ArcType.OPEN);
+							break;
+			case "ellipse":
+							gc.strokeArc(x, y, event.getX()-x, event.getY()-y, 0, 360, ArcType.OPEN);
+							break;
+			}
 	}
 
 	@FXML
@@ -256,5 +418,54 @@ public class ClientController {
 	public void setLogoutButton(Button logoutButton) {
 		this.logoutButton = logoutButton;
 	}
+	
+	public Image getscreenShot(){
+		return screenShot;
+	}
+	public void setScreenShot(Image screenShot){
+		this.screenShot = screenShot;
+	}
+	
+	public void sendScreenShot(){
+		SnapshotParameters params = new SnapshotParameters();
+		params.setFill(Color.TRANSPARENT);
+		this.screenShot = canvas.snapshot(params, null);
+		
+			ChatMessage newMessage= new ChatMessage();
+			if(this.userList.getSelectionModel().getSelectedItem().isEmpty())
+			{
+				this.getUserList().getSelectionModel().select("Broadcast");
+			}
+
+			if(!this.userList.getSelectionModel().getSelectedItem().equals("Broadcast"))
+			{
+				newMessage.setMessageType(MessageConstants.PRIVATE_MESSAGE);
+				newMessage.setRecipientClient(this.userList.getSelectionModel().getSelectedItem());
+				this.clientLogs.appendText(this.userName.getText()+" to "+this.userList.getSelectionModel().getSelectedItem()+">"+"Drawing"+"\n");
+			}
+			else
+			{
+				newMessage.setMessageType(MessageConstants.CHAT_BROADCAST);
+				this.clientLogs.appendText(this.userName.getText()+">"+"Drawing"+"\n");
+			}
+
+			newMessage.setMessage("Drawing");
+			newMessage.setClientDetails(clientdetails);
+
+			sendAction(screenShot);
+		
+	}
+	public void sendAction (Image screenShot){
+		ByteArrayOutputStream  byteOutput = new ByteArrayOutputStream();
+		try {
+			ImageIO.write( SwingFXUtils.fromFXImage( screenShot, null ), "png", byteOutput );
+			byte[] imagebyte = byteOutput.toByteArray();
+			oos.write(imagebyte);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 
 }
