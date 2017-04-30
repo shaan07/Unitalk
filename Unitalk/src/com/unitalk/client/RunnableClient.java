@@ -1,13 +1,20 @@
 package com.unitalk.client;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+
+import javax.imageio.ImageIO;
 
 import com.unitalk.constants.ChatMessage;
 import com.unitalk.constants.MessageConstants;
 
 import javafx.application.Platform;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 
 public class RunnableClient implements Runnable {
 
@@ -15,6 +22,7 @@ public class RunnableClient implements Runnable {
 	private Socket serverSocket;
 	public  ObjectInputStream ois;
 	public  ObjectOutputStream oos;
+	private GraphicsContext gc;
 
 	public RunnableClient(ClientController controller,Socket socket,ObjectInputStream ois,ObjectOutputStream oos) {
 
@@ -22,6 +30,7 @@ public class RunnableClient implements Runnable {
 		this.serverSocket=socket;
 		this.ois=ois;
 		this.oos=oos;
+		this.gc = this.controller.canvas.getGraphicsContext2D();
 	}
 
 	@Override
@@ -34,7 +43,17 @@ public class RunnableClient implements Runnable {
 				switch(newMessage.getMessageType())
 				{
 				case MessageConstants.CHAT_BROADCAST:
+					if (newMessage.getMessage().equalsIgnoreCase("Drawing")){
+						byte[] imageBytes = newMessage.getByteArray();
+						System.out.println(imageBytes.length);
+						BufferedImage buffImage = ImageIO.read(new ByteArrayInputStream(imageBytes));
+						Image image = SwingFXUtils.toFXImage(buffImage, null );
+						gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
+						gc.drawImage(image, 0, 0);
+					}
+					else{
 					this.controller.getClientLogs().appendText(newMessage.getClientDetails().getNickname() +">"+newMessage.getMessage()+"\n");
+					}
 					break;
 				case MessageConstants.REGISTER_BROADCAST:
 					String newClient= newMessage.getMessage();
@@ -48,7 +67,15 @@ public class RunnableClient implements Runnable {
 					break;
 				case MessageConstants.PRIVATE_MESSAGE:
 					this.controller.getUserList().getSelectionModel().select(newMessage.getClientDetails().getNickname());
+					if (newMessage.getMessage().equalsIgnoreCase("Drawing")){
+						byte[] imageBytes = newMessage.getByteArray();
+						BufferedImage buffImage = ImageIO.read(new ByteArrayInputStream(imageBytes));
+						Image image = SwingFXUtils.toFXImage(buffImage, null );
+						this.controller.canvas.getGraphicsContext2D().drawImage(image, 0, 0);
+					}
+					else{
 					this.controller.getClientLogs().appendText(newMessage.getClientDetails().getNickname() +" to You >"+newMessage.getMessage()+"\n");
+					}
 					break;
 				case MessageConstants.EXIT_MESSAGE:
 					String leavingClient= newMessage.getMessage();
@@ -84,4 +111,5 @@ public class RunnableClient implements Runnable {
 		if(this.controller.getUserList().getItems().contains(nickname))
 		this.controller.getUserList().getItems().remove(nickname);
 	}
+	
 }

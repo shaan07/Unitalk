@@ -17,6 +17,7 @@ public class ChatMessage implements Serializable{
 	private ClientDetails clientDetails; 
 	private String recipientClient;
 	private String message;
+	private byte[] byteArray;
 	private ArrayList<ClientDetails> connectedClients;
 
 	
@@ -53,6 +54,12 @@ public class ChatMessage implements Serializable{
 	}
 	public void setMessage(String message) {
 		this.message = message;
+	}
+	public byte[] getByteArray() {
+		return byteArray;
+	}
+	public void setByteArray(byte[] byteArray) {
+		this.byteArray = byteArray;
 	}
 
 	

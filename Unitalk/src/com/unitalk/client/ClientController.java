@@ -29,6 +29,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
@@ -91,7 +92,7 @@ public class ClientController {
 			System.out.println(this.userName);
 			setTool = "na";
 			gc = canvas.getGraphicsContext2D();
-			colorPicker = new ColorPicker(Color.BLACK);
+			colorPicker.setValue(Color.BLACK);
 			this.serverIp.setText(ClientMain.controller.getServerId().getText());
 			if (serverIp.getText() != null && !serverIp.getText().isEmpty()) {
 				this.serverSocket = new Socket(this.serverIp.getText(), 9888);
@@ -131,6 +132,11 @@ public class ClientController {
 	}
 	
 	@FXML
+	void btnBrushAction (ActionEvent event){
+		setTool = "brush";
+	}
+	
+	@FXML
 	void btnRectangleAction (ActionEvent event){
 		setTool = "rectangle";
 	}
@@ -152,14 +158,32 @@ public class ClientController {
 	
 	@FXML
 	void btnRotateLeftAction (ActionEvent event){
-		setTool = "rotate_left";
-		canvas.setRotate(canvas.getRotate()-90);
+		
+//		canvas.setRotate(canvas.getRotate()-90);
+		
+		SnapshotParameters params = new SnapshotParameters();
+		params.setFill(Color.TRANSPARENT);
+		this.screenShot = canvas.snapshot(params, null);
+		ImageView image = new ImageView(screenShot);
+		image.setRotate(image.getRotate()-90);
+		screenShot = image.snapshot(params, null);
+		gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
+		gc.drawImage(screenShot, 0, 0);
 	}
 	
 	@FXML
 	void btnRotateRightAction (ActionEvent event){
-		setTool = "rotate_right";
-		canvas.setRotate(canvas.getRotate()+90);
+		
+//		canvas.setRotate(canvas.getRotate()+90);
+		
+		SnapshotParameters params = new SnapshotParameters();
+		params.setFill(Color.TRANSPARENT);
+		this.screenShot = canvas.snapshot(params, null);
+		ImageView image = new ImageView(screenShot);
+		image.setRotate(image.getRotate()+90);
+		screenShot = image.snapshot(params, null);
+		gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
+		gc.drawImage(screenShot, 0, 0);
 	}
 	
 	@FXML
@@ -171,7 +195,7 @@ public class ClientController {
 	
 	@FXML
 	void btnZoomPlusClick (MouseEvent event){
-		setTool = "zoom_plus";
+		
 		canvas.setScaleX(canvas.getScaleX() * 1.05);
 		canvas.setScaleY(canvas.getScaleY() * 1.05);
 		event.consume();
@@ -179,7 +203,7 @@ public class ClientController {
 	
 	@FXML
 	void btnZoomMinusClick (MouseEvent event){
-		setTool = "zoom_minus";
+		
 		canvas.setScaleX(canvas.getScaleX() * 0.95);
 		canvas.setScaleY(canvas.getScaleY() * 0.95);
 		event.consume();
@@ -204,7 +228,11 @@ public class ClientController {
 				case "pencil":
 								Image cursorImage = new Image ("com/unitalk/client/icons/pencil.png");
 								canvas.setCursor(new ImageCursor(cursorImage, cursorImage.getWidth()/2, cursorImage.getHeight()/2));
-							break;
+								break;
+				case "brush":
+								Image cursorImageBrush = new Image ("com/unitalk/client/icons/brush.png");
+								canvas.setCursor(new ImageCursor(cursorImageBrush, cursorImageBrush.getWidth()/2, cursorImageBrush.getHeight()/2));
+								break;
 				default:	canvas.setCursor(Cursor.CROSSHAIR);
 			}
 		}
@@ -227,6 +255,14 @@ public class ClientController {
 							gc.beginPath();
 					        gc.moveTo(event.getX(), event.getY());
 					        gc.setStroke(colorPicker.getValue());
+					        gc.setLineWidth(1.0);
+					        gc.stroke();
+					      break;
+			case "brush":
+							gc.beginPath();
+					        gc.moveTo(event.getX(), event.getY());
+					        gc.setStroke(colorPicker.getValue());
+					        gc.setLineWidth(3.0);
 					        gc.stroke();
 					      break;
 			case "rectangle": 
@@ -257,6 +293,12 @@ public class ClientController {
 			         gc.stroke();
 			         sendScreenShot();
 			         break;
+		case "brush":
+					 gc.lineTo(event.getX(), event.getY());
+					 gc.setStroke(colorPicker.getValue());
+			         gc.stroke();
+			         sendScreenShot();
+			         break;	   
 
 		}
 	}
@@ -267,18 +309,23 @@ public class ClientController {
 			case "line":
 						 gc.lineTo(event.getX(), event.getY());
 				         gc.stroke();
+				         sendScreenShot();
 				         break;
 			case "rectangle": 
 							gc.strokeRect(x, y, event.getX() - x, event.getY() - y);
+							sendScreenShot();
 					        break;
 			case "square": 
 							gc.strokeRect(x, y, event.getY() - y, event.getY() - y);
+							sendScreenShot();
 					        break;
 			case "circle":
 							gc.strokeArc(x, y, event.getY()-y, event.getY()-y, 0, 360, ArcType.OPEN);
+							sendScreenShot();
 							break;
 			case "ellipse":
 							gc.strokeArc(x, y, event.getX()-x, event.getY()-y, 0, 360, ArcType.OPEN);
+							sendScreenShot();
 							break;
 			}
 	}
@@ -430,41 +477,48 @@ public class ClientController {
 		SnapshotParameters params = new SnapshotParameters();
 		params.setFill(Color.TRANSPARENT);
 		this.screenShot = canvas.snapshot(params, null);
+		ChatMessage newMessage= new ChatMessage();
 		
-			ChatMessage newMessage= new ChatMessage();
-			if(this.userList.getSelectionModel().getSelectedItem().isEmpty())
-			{
-				this.getUserList().getSelectionModel().select("Broadcast");
+			if (!this.userList.getItems().isEmpty()){
+						if(this.userList.getSelectionModel().getSelectedItem().isEmpty())
+						{
+							this.getUserList().getSelectionModel().select("Broadcast");
+						}
+			
+						if(!this.userList.getSelectionModel().getSelectedItem().equals("Broadcast"))
+						{
+							newMessage.setMessageType(MessageConstants.PRIVATE_MESSAGE);
+							newMessage.setRecipientClient(this.userList.getSelectionModel().getSelectedItem());
+						}
+						else
+						{
+							newMessage.setMessageType(MessageConstants.CHAT_BROADCAST);
+						}
+			
+						newMessage.setMessage("Drawing");
+						newMessage.setByteArray(imageToBytes(screenShot));
+						newMessage.setClientDetails(clientdetails);			
+						try {
+							oos.writeObject(newMessage);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+				}
 			}
-
-			if(!this.userList.getSelectionModel().getSelectedItem().equals("Broadcast"))
-			{
-				newMessage.setMessageType(MessageConstants.PRIVATE_MESSAGE);
-				newMessage.setRecipientClient(this.userList.getSelectionModel().getSelectedItem());
-				this.clientLogs.appendText(this.userName.getText()+" to "+this.userList.getSelectionModel().getSelectedItem()+">"+"Drawing"+"\n");
-			}
-			else
-			{
-				newMessage.setMessageType(MessageConstants.CHAT_BROADCAST);
-				this.clientLogs.appendText(this.userName.getText()+">"+"Drawing"+"\n");
-			}
-
-			newMessage.setMessage("Drawing");
-			newMessage.setClientDetails(clientdetails);
-
-			sendAction(screenShot);
-		
 	}
-	public void sendAction (Image screenShot){
+	public byte[] imageToBytes (Image screenShot){
 		ByteArrayOutputStream  byteOutput = new ByteArrayOutputStream();
+		byte[] imageBytes = null;
 		try {
 			ImageIO.write( SwingFXUtils.fromFXImage( screenShot, null ), "png", byteOutput );
-			byte[] imagebyte = byteOutput.toByteArray();
-			oos.write(imagebyte);
+			imageBytes = byteOutput.toByteArray();
+			System.out.println(imageBytes.length);
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return imageBytes;
 	}
 	
 

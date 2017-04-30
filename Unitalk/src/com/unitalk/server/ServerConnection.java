@@ -78,12 +78,12 @@ public class ServerConnection implements Runnable ,Serializable{
 				case MessageConstants.PRIVATE_MESSAGE://Code for PM
 					String privateMessage= newMessage.getMessage();
 					System.out.println(privateMessage);
-					String recipientNickname= newMessage.getRecipientClient();
+					String recipientNickname = newMessage.getRecipientClient();
 					ClientDetails recipientClientDetails = null;
 
 					for(ClientDetails client:this.connectedClients){
 						if(client.getNickname().equals(recipientNickname)){
-							recipientClientDetails=client;
+							recipientClientDetails = client;
 							client.getConnectedClient().oos.writeUnshared(newMessage);
 						}
 					}
