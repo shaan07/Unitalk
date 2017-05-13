@@ -1,7 +1,7 @@
 package com.unitalk.client;
 
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -29,12 +29,13 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 
 public class ClientController {
 
@@ -73,7 +74,13 @@ public class ClientController {
 	@FXML
 	private Button btnRotateRight;
 	@FXML
+	private Button btnClear;
+	@FXML
+	private Button btnImage;
+	@FXML
 	private ColorPicker colorPicker;
+	@FXML
+	private StackPane stackPane;
 	@FXML
 	public Canvas canvas;
 
@@ -85,6 +92,8 @@ public class ClientController {
 	private GraphicsContext gc;
 	private double x, y;
 	private Image screenShot;
+	private Image importImage;
+	final FileChooser fileChooser = new FileChooser();
 	@FXML
 	public void initialize() {
 		try {
@@ -159,31 +168,16 @@ public class ClientController {
 	@FXML
 	void btnRotateLeftAction (ActionEvent event){
 		
-//		canvas.setRotate(canvas.getRotate()-90);
-		
-		SnapshotParameters params = new SnapshotParameters();
-		params.setFill(Color.TRANSPARENT);
-		this.screenShot = canvas.snapshot(params, null);
-		ImageView image = new ImageView(screenShot);
-		image.setRotate(image.getRotate()-90);
-		screenShot = image.snapshot(params, null);
-		gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
-		gc.drawImage(screenShot, 0, 0);
+		canvas.setRotate(canvas.getRotate()-90);
+
 	}
 	
 	@FXML
 	void btnRotateRightAction (ActionEvent event){
 		
-//		canvas.setRotate(canvas.getRotate()+90);
+		canvas.setRotate(canvas.getRotate()+90);
 		
-		SnapshotParameters params = new SnapshotParameters();
-		params.setFill(Color.TRANSPARENT);
-		this.screenShot = canvas.snapshot(params, null);
-		ImageView image = new ImageView(screenShot);
-		image.setRotate(image.getRotate()+90);
-		screenShot = image.snapshot(params, null);
-		gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
-		gc.drawImage(screenShot, 0, 0);
+		
 	}
 	
 	@FXML
@@ -210,6 +204,33 @@ public class ClientController {
 	}
 	
 	@FXML
+	void btnClearAction (ActionEvent event){
+		
+		gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
+	}
+	
+	@FXML
+	void btnImageAction (ActionEvent event){
+		
+		configureFileChooser(fileChooser);
+          File file = fileChooser.showOpenDialog(ClientMain.currentStage);
+          if (file != null) {
+              try {
+            	  importImage = new Image(file.toURI().toString());
+            	  setTool = "ImageTool";
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+          }
+          else {
+        	  importImage = null;
+          }
+		
+	}
+	
+	
+	@FXML
 	void canvasOnScroll (ScrollEvent event){
 		double zoomFactor = 1.05;
         double deltaY = event.getDeltaY();
@@ -232,6 +253,10 @@ public class ClientController {
 				case "brush":
 								Image cursorImageBrush = new Image ("com/unitalk/client/icons/brush.png");
 								canvas.setCursor(new ImageCursor(cursorImageBrush, cursorImageBrush.getWidth()/2, cursorImageBrush.getHeight()/2));
+								break;
+				case "ImageTool":
+								Image cursorImageImport = new Image ("com/unitalk/client/icons/image.png");
+								canvas.setCursor(new ImageCursor(cursorImageImport, cursorImageImport.getWidth()/2, cursorImageImport.getHeight()/2));
 								break;
 				default:	canvas.setCursor(Cursor.CROSSHAIR);
 			}
@@ -315,6 +340,7 @@ public class ClientController {
 							gc.strokeRect(x, y, event.getX() - x, event.getY() - y);
 							sendScreenShot();
 					        break;
+													
 			case "square": 
 							gc.strokeRect(x, y, event.getY() - y, event.getY() - y);
 							sendScreenShot();
@@ -325,6 +351,10 @@ public class ClientController {
 							break;
 			case "ellipse":
 							gc.strokeArc(x, y, event.getX()-x, event.getY()-y, 0, 360, ArcType.OPEN);
+							sendScreenShot();
+							break;
+			case "ImageTool":
+							gc.drawImage(importImage, event.getX(), event.getY(), 250, 200);
 							sendScreenShot();
 							break;
 			}
@@ -377,7 +407,7 @@ public class ClientController {
 		}
 	}
 
-
+// register client method
 	public void registerClient(){
 		try {
 			ChatMessage registerMessage= new ChatMessage();
@@ -473,6 +503,7 @@ public class ClientController {
 		this.screenShot = screenShot;
 	}
 	
+	// send sceenshot method
 	public void sendScreenShot(){
 		SnapshotParameters params = new SnapshotParameters();
 		params.setFill(Color.TRANSPARENT);
@@ -506,13 +537,28 @@ public class ClientController {
 				}
 			}
 	}
+	
+	// method to configure file chooser
+	private void configureFileChooser(FileChooser fileChooser) {
+			
+			fileChooser.setTitle("Import an Image");
+          fileChooser.setInitialDirectory(
+              new File(System.getProperty("user.home"))
+          );                 
+          fileChooser.getExtensionFilters().addAll(
+              new FileChooser.ExtensionFilter("Images", "*.jpg*", "*.png"),
+              new FileChooser.ExtensionFilter("JPEG", "*.jpg"),
+              new FileChooser.ExtensionFilter("PNG", "*.png")
+          );	
+		}
+	
+	// method to convert images to bytes which is suitable for serialization
 	public byte[] imageToBytes (Image screenShot){
 		ByteArrayOutputStream  byteOutput = new ByteArrayOutputStream();
 		byte[] imageBytes = null;
 		try {
 			ImageIO.write( SwingFXUtils.fromFXImage( screenShot, null ), "png", byteOutput );
 			imageBytes = byteOutput.toByteArray();
-			System.out.println(imageBytes.length);
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

@@ -15,6 +15,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
@@ -122,6 +123,7 @@
               <items>
                 <AnchorPane id="toolPane" minHeight="0.0" minWidth="0.0" prefHeight="427.0" prefWidth="94.0">
                      <children>
+                        <Button id="btnClear" fx:id="btnClear" layoutX="53.0" layoutY="272.0" mnemonicParsing="false" onAction="#btnClearAction" prefHeight="35.0" prefWidth="39.0" style="-fx-background-color: #46d246;" text="CLR" />
                         <ColorPicker id="colorPicker" fx:id="colorPicker" layoutX="6.0" layoutY="349.0" onAction="#colorPickerAction" prefHeight="35.0" prefWidth="92.0" style="-fx-background-color: #46d246;" />
                         <Button id="btnLine" fx:id="btnLine" layoutX="53.0" layoutY="14.0" mnemonicParsing="false" onAction="#btnLineAction" prefHeight="35.0" prefWidth="39.0" style="-fx-background-color: #46d246;">
                            <graphic>
@@ -231,6 +233,15 @@
                               </ImageView>
                            </graphic>
                         </Button>
+                        <Button id="btnImage" fx:id="btnImage" layoutX="8.0" layoutY="273.0" mnemonicParsing="false" onAction="#btnImageAction" prefHeight="34.0" prefWidth="42.0" style="-fx-background-color: #46d246;">
+                           <graphic>
+                              <ImageView fitHeight="24.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@icons/image.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
                      </children>
                   </AnchorPane>
                 <AnchorPane id="drawPane" minHeight="0.0" minWidth="0.0" prefHeight="427.0" prefWidth="559.0">
@@ -240,7 +251,11 @@
                      <children>
                         <ScrollPane id="scrollPane" prefHeight="426.0" prefWidth="556.0">
                            <content>
-                              <Canvas id="canvas" fx:id="canvas" height="597.0" onMouseDragged="#canvasMouseDrag" onMouseEntered="#canvasHover" onMouseExited="#canvasHoverExit" onMousePressed="#canvasMousePressed" onMouseReleased="#canvasMouseRelease" onScroll="#canvasOnScroll" width="666.0" />
+                              <StackPane id="stackPane" prefHeight="150.0" prefWidth="200.0">
+                                 <children>
+                                    <Canvas id="canvas" fx:id="canvas" height="597.0" onMouseDragged="#canvasMouseDrag" onMouseEntered="#canvasHover" onMouseExited="#canvasHoverExit" onMousePressed="#canvasMousePressed" onMouseReleased="#canvasMouseRelease" onScroll="#canvasOnScroll" width="666.0" />
+                                 </children>
+                              </StackPane>
                            </content>
                         </ScrollPane>
                      </children>

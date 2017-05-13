@@ -20,6 +20,7 @@ public static AccountActionController controller;
 			Scene scene = new Scene(root,600,600);
 	//		scene.getStylesheets().add(getClass().getResource("client.css").toExternalForm());
 			primaryStage.setScene(scene);
+			primaryStage.setTitle("Unitalk Chat");
 			primaryStage.show();
 			
 			currentStage=primaryStage;
