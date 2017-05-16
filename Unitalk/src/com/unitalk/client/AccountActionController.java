@@ -12,7 +12,7 @@ import javafx.stage.Stage;
 
 public class AccountActionController {
 
-
+// getting fxml components
 
 	@FXML
 	private TextField serverId;
@@ -27,14 +27,11 @@ public class AccountActionController {
 	@FXML
 	void buttonLoginAction(ActionEvent event) {
 
-		//	String userName = textFieldUserName.getText();
-		//System.out.println(userName);
 
-
+		// changing scene of the primary stage to clientLayout
 		try {
 			setLoginData();
 			Stage stage = ClientMain.currentStage;
-			//	System.out.println(stage.getUserData().toString());
 			BorderPane root = (BorderPane)FXMLLoader.load(getClass().getResource("clientlayout.fxml"));
 			Scene scene = new Scene(root);
 			stage.setScene(scene);	

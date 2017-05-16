@@ -39,6 +39,8 @@ import javafx.stage.FileChooser;
 
 public class ClientController {
 
+	// getting fxml components
+	
 	@FXML
 	private TextField message;
 	@FXML
@@ -61,8 +63,6 @@ public class ClientController {
 	private Button btnSquare;
 	@FXML
 	private Button btnRectangle;
-	@FXML
-	private Button btnText;
 	@FXML
 	private Button btnBrush;
 	@FXML
@@ -94,14 +94,21 @@ public class ClientController {
 	private Image screenShot;
 	private Image importImage;
 	final FileChooser fileChooser = new FileChooser();
+	
+	// initializing the required components
 	@FXML
 	public void initialize() {
 		try {
+			// setting user name
 			this.userName.setText(ClientMain.controller.getButtonLogin().getText());
 			System.out.println(this.userName);
 			setTool = "na";
 			gc = canvas.getGraphicsContext2D();
+			
+			// setting default value for color picker
 			colorPicker.setValue(Color.BLACK);
+			
+			//setting server name/IP
 			this.serverIp.setText(ClientMain.controller.getServerId().getText());
 			if (serverIp.getText() != null && !serverIp.getText().isEmpty()) {
 				this.serverSocket = new Socket(this.serverIp.getText(), 9888);
@@ -109,6 +116,7 @@ public class ClientController {
 				this.serverIp.setText("Localhost");
 				this.serverSocket = new Socket("localhost", 9888);
 			}
+			// Logging the messages and client events
 			this.clientLogs.appendText("Connected to Server :" + serverSocket.getInetAddress() + " Port :"
 					+ serverSocket.getPort() + "\n");
 			this.ois = new ObjectInputStream(this.serverSocket.getInputStream());
@@ -129,6 +137,8 @@ public class ClientController {
 		}
 
 	}
+	
+	// setting tool accordingly
 	
 	@FXML
 	void btnLineAction (ActionEvent event){
@@ -165,6 +175,7 @@ public class ClientController {
 		setTool = "ellipse";
 	}
 	
+	// rotating canvas to left
 	@FXML
 	void btnRotateLeftAction (ActionEvent event){
 		
@@ -172,6 +183,7 @@ public class ClientController {
 
 	}
 	
+	// rotating canvas to right
 	@FXML
 	void btnRotateRightAction (ActionEvent event){
 		
@@ -180,13 +192,14 @@ public class ClientController {
 		
 	}
 	
+	// color picker action
 	@FXML
 	void colorPickerAction (ActionEvent event){
 		System.out.println(colorPicker.getValue());
 		gc.setStroke(colorPicker.getValue());
 	}
 	
-	
+	// Zooming in
 	@FXML
 	void btnZoomPlusClick (MouseEvent event){
 		
@@ -195,6 +208,7 @@ public class ClientController {
 		event.consume();
 	}
 	
+	// Zooming out
 	@FXML
 	void btnZoomMinusClick (MouseEvent event){
 		
@@ -203,12 +217,15 @@ public class ClientController {
 		event.consume();
 	}
 	
+	
+	// clearing canvas screen
 	@FXML
 	void btnClearAction (ActionEvent event){
 		
 		gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
 	}
 	
+	// Importing image to canvas
 	@FXML
 	void btnImageAction (ActionEvent event){
 		
@@ -229,7 +246,7 @@ public class ClientController {
 		
 	}
 	
-	
+	// setting zoom during mouse scroll over canvas
 	@FXML
 	void canvasOnScroll (ScrollEvent event){
 		double zoomFactor = 1.05;
@@ -242,6 +259,7 @@ public class ClientController {
         event.consume();
 	}
 	
+	// changing cursor image on mouse over if any tool is selected
 	@FXML
 	void canvasHover (MouseEvent event ){
 		if (setTool != "na"){
@@ -268,6 +286,7 @@ public class ClientController {
 		canvas.setCursor(Cursor.DEFAULT);
 	}
 	
+	// Mouse pressed events
 	@FXML
 	void canvasMousePressed (MouseEvent event){
 			switch(setTool){
@@ -309,6 +328,7 @@ public class ClientController {
 			}
 	}
 	
+	// Mouse drag events
 	@FXML
 	void canvasMouseDrag(MouseEvent event){
 		switch(setTool){
@@ -328,6 +348,7 @@ public class ClientController {
 		}
 	}
 	
+	// Mouse release events
 	@FXML
 	void canvasMouseRelease (MouseEvent event){
 			switch(setTool){
@@ -360,6 +381,7 @@ public class ClientController {
 			}
 	}
 
+	// sending message 
 	@FXML
 	void buttonSendAction(ActionEvent event) {
 
@@ -392,6 +414,7 @@ public class ClientController {
 		}
 	}
 
+	// Logout action
 	@FXML
 	void buttonLogoutAction(ActionEvent event) {
 		try {

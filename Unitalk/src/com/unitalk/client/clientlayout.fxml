@@ -123,7 +123,7 @@
               <items>
                 <AnchorPane id="toolPane" minHeight="0.0" minWidth="0.0" prefHeight="427.0" prefWidth="94.0">
                      <children>
-                        <Button id="btnClear" fx:id="btnClear" layoutX="53.0" layoutY="272.0" mnemonicParsing="false" onAction="#btnClearAction" prefHeight="35.0" prefWidth="39.0" style="-fx-background-color: #46d246;" text="CLR" />
+                        <Button id="btnClear" fx:id="btnClear" layoutX="53.0" layoutY="98.0" mnemonicParsing="false" onAction="#btnClearAction" prefHeight="35.0" prefWidth="39.0" style="-fx-background-color: #46d246;" text="CLR" />
                         <ColorPicker id="colorPicker" fx:id="colorPicker" layoutX="6.0" layoutY="349.0" onAction="#colorPickerAction" prefHeight="35.0" prefWidth="92.0" style="-fx-background-color: #46d246;" />
                         <Button id="btnLine" fx:id="btnLine" layoutX="53.0" layoutY="14.0" mnemonicParsing="false" onAction="#btnLineAction" prefHeight="35.0" prefWidth="39.0" style="-fx-background-color: #46d246;">
                            <graphic>
@@ -166,15 +166,6 @@
                               <ImageView fitHeight="24.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
                                     <Image url="@icons/ellipse.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                        </Button>
-                        <Button id="btnText" layoutX="53.0" layoutY="98.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="39.0" style="-fx-background-color: #46d246;">
-                           <graphic>
-                              <ImageView fitHeight="29.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@icons/text.png" />
                                  </image>
                               </ImageView>
                            </graphic>

@@ -38,6 +38,7 @@ public class RunnableClient implements Runnable {
 		while(true)
 		{
 			try {
+				// reading incoming chat messages and switching action accordingly
 				
 				ChatMessage newMessage= (ChatMessage) this.ois.readObject();
 				switch(newMessage.getMessageType())
@@ -94,6 +95,8 @@ public class RunnableClient implements Runnable {
 			}
 		}
 	}
+	
+	// adding new client
 	public void addClient(String nickname){
 		System.out.println("Adding new client :"+nickname);
 		if(!this.controller.getUserList().getItems().contains(nickname))
@@ -106,6 +109,8 @@ public class RunnableClient implements Runnable {
 
 
 	}
+	
+	// reomving a client
 	public void removeClient(String nickname){
 		System.out.println("Removing client :"+nickname);
 		if(this.controller.getUserList().getItems().contains(nickname))
